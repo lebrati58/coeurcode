@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cœur Code NEXT — Écran géant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --noir:#0F0D0A; --charbon:#1B1814; --carte:#221E18;
+    --or:#D4B36A; --or-clair:#EFD9A7; --or-sombre:#A8863E;
+    --ivoire:#F7F2E9; --taupe:#9B917F; --bordeaux:#8E3B47; --rouge:#C24D5A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1100px 600px at 50% -10%, rgba(212,179,106,.10), transparent 65%),
+      linear-gradient(180deg, #14110D 0%, var(--noir) 45%);
+    color:var(--ivoire); font-family:'Jost',sans-serif; overflow-x:hidden;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:26px 30px 60px}
+
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    border-bottom:1px solid rgba(212,179,106,.25);padding-bottom:18px}
+  .logo{line-height:1}
+  .logo small{display:block;font-size:clamp(10px,1vw,13px);font-weight:500;letter-spacing:.34em;color:var(--or);text-transform:uppercase;margin-bottom:8px}
+  .logo .n{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(36px,4.4vw,58px);letter-spacing:.08em}
+  .logo .n i{font-style:italic;color:var(--or)}
+  .logo .tag{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(13px,1.4vw,17px);color:var(--taupe);margin-top:6px}
+  .pill{font-weight:500;font-size:clamp(12px,1.4vw,16px);letter-spacing:.22em;text-transform:uppercase;
+    color:var(--or);border:1px solid rgba(212,179,106,.5);padding:10px 22px;border-radius:2px}
+  .banniere{display:none;margin:14px 0 0;padding:11px 18px;border-radius:2px;background:rgba(212,179,106,.08);
+    border:1px solid rgba(212,179,106,.35);color:var(--or-clair);font-weight:500;text-align:center;font-size:clamp(14px,1.6vw,18px);letter-spacing:.05em}
+  h2.section{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(24px,3vw,38px);text-align:center;margin:26px 0 16px}
+  h2.section span{font-style:italic;color:var(--or)}
+  .compteur{text-align:center;color:var(--taupe);font-weight:400;font-size:clamp(13px,1.6vw,17px);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+
+  .horloge{display:flex;flex-direction:column;align-items:center;margin:10px 0 20px}
+  .cadran{position:relative;width:clamp(190px,26vw,300px);height:clamp(190px,26vw,300px)}
+  .cadran svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .cadran .fond{fill:none;stroke:rgba(212,179,106,.18);stroke-width:2}
+  .cadran .arc{fill:none;stroke:var(--or);stroke-width:2.5;stroke-linecap:butt;transition:stroke-dashoffset 1s linear, stroke .4s}
+  .cadran .centre{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .cadran .temps{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(48px,7vw,88px);line-height:1;font-variant-numeric:tabular-nums}
+  .cadran .coeurbat{font-size:clamp(18px,2.4vw,26px);color:var(--or);animation:bat 1.15s ease-in-out infinite}
+  .cadran.urgent .arc{stroke:var(--rouge)} .cadran.urgent .temps{color:var(--rouge)}
+  .cadran.urgent .coeurbat{animation-duration:.5s}
+  @keyframes bat{0%,100%{transform:scale(1)}12%{transform:scale(1.18)}24%{transform:scale(1)}36%{transform:scale(1.12)}}
+
+  .paires{display:flex;flex-direction:column;gap:10px}
+  .paire{display:grid;grid-template-columns:auto 1fr auto 1fr;align-items:center;gap:10px;
+    background:var(--carte);border:1px solid rgba(212,179,106,.2);border-radius:2px;padding:13px 22px;animation:pop .5s ease both}
+  @keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .table{font-weight:500;font-size:clamp(11px,1.3vw,14px);letter-spacing:.2em;text-transform:uppercase;color:var(--or);
+    border:1px solid rgba(212,179,106,.45);border-radius:2px;padding:7px 13px;white-space:nowrap}
+  .personne{display:flex;align-items:center;gap:14px;min-width:0}
+  .personne.droite{flex-direction:row-reverse;text-align:right}
+  .badge{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(20px,2.5vw,30px);line-height:1;
+    min-width:1.9em;height:1.9em;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+  .badge.f{border:1.5px solid var(--or);color:var(--or)}
+  .badge.h{border:1.5px solid var(--ivoire);color:var(--ivoire)}
+  .prenom{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(19px,2.3vw,29px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lien{display:flex;flex-direction:column;align-items:center;padding:0 12px}
+  .lien .coeurbat{font-size:clamp(16px,2vw,24px);color:var(--or);animation:bat 1.15s ease-in-out infinite}
+  .lien .pct{font-weight:500;font-size:clamp(12px,1.5vw,16px);letter-spacing:.12em;color:var(--taupe)}
+
+  .classement{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:700px){.classement{grid-template-columns:1fr}}
+  .colonne{background:var(--carte);border:1px solid rgba(212,179,106,.2);border-radius:2px;padding:22px 24px}
+  .colonne h3{font-family:'Cormorant Garamond',serif;font-weight:600;font-style:italic;font-size:clamp(20px,2.4vw,28px);
+    text-align:center;margin-bottom:14px;color:var(--or)}
+  .ligne{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;
+    padding:9px 4px;border-bottom:1px solid rgba(212,179,106,.12);animation:pop .4s ease both}
+  .ligne:last-child{border-bottom:none}
+  .ligne .mini{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(15px,1.7vw,19px);
+    min-width:2.1em;height:2.1em;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid rgba(212,179,106,.5);color:var(--or)}
+  .colonne.h .mini{border-color:rgba(247,242,233,.4);color:var(--ivoire)}
+  .ligne .nom{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(17px,2vw,23px)}
+  .ligne .score{font-weight:500;font-size:clamp(13px,1.5vw,17px);letter-spacing:.1em;color:var(--or)}
+
+  .plein{min-height:55vh;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+  .plein .gros{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(34px,5.4vw,66px)}
+  .plein .gros span{font-style:italic;color:var(--or)}
+  .plein .coeurbat{font-size:clamp(44px,7vw,90px);color:var(--or);animation:bat 1.15s ease-in-out infinite}
+  .plein .choix{font-size:clamp(38px,6vw,76px);letter-spacing:.35em;color:var(--or)}
+  .plein .sousv{color:var(--taupe);font-weight:400;font-size:clamp(14px,1.8vw,20px);letter-spacing:.04em;line-height:1.7}
+
+  .final{display:none}
+  .final .gros{font-family:'Cormorant Garamond',serif;font-weight:600;text-align:center;font-size:clamp(30px,4.6vw,56px);margin:18px 0 8px}
+  .final .gros span{font-style:italic;color:var(--or)}
+  .match{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;
+    background:var(--carte);border:1px solid rgba(212,179,106,.55);border-radius:2px;padding:18px 24px;margin-top:12px;animation:pop .6s ease both}
+  .match .coeurbat{font-size:clamp(26px,3.6vw,44px);color:var(--or);animation:bat .95s ease-in-out infinite}
+
+  .etat{display:none;text-align:center;color:var(--taupe);padding:60px 0;font-size:17px;letter-spacing:.04em}
+  footer{text-align:center;margin-top:44px;color:#5E574B;font-size:13px;letter-spacing:.05em}
+  footer i{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--taupe)}
+  @media (prefers-reduced-motion: reduce){ .coeurbat,.paire,.ligne,.match{animation:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><small>Cœur Code · Soirée Tou B'Av</small><span class="n">NE<i>X</i>T</span><span class="tag">Plus qu'une rencontre, une expérience.</span></div>
+    <div class="pill" id="pill">Chargement…</div>
+  </header>
+  <div class="banniere" id="banniere"></div>
+
+  <div id="vueClassement" style="display:none">
+    <h2 class="section">Les affinités <span>en direct</span></h2>
+    <div class="compteur" id="compteur"></div>
+    <div class="classement">
+      <div class="colonne f"><h3>Elles</h3><div id="listeF"></div></div>
+      <div class="colonne h"><h3>Eux</h3><div id="listeH"></div></div>
+    </div>
+  </div>
+
+  <div id="vueRonde" style="display:none">
+    <div class="horloge">
+      <div class="cadran" id="cadran">
+        <svg viewBox="0 0 100 100">
+          <circle class="fond" cx="50" cy="50" r="45"/>
+          <circle class="arc" id="arc" cx="50" cy="50" r="45"/>
+        </svg>
+        <div class="centre"><div class="coeurbat">❤</div><div class="temps" id="temps">5:00</div></div>
+      </div>
+    </div>
+    <h2 class="section" id="titreRonde"></h2>
+    <div class="paires" id="paires"></div>
+  </div>
+
+  <div class="plein" id="vueVote">
+    <div class="gros">Fin du date. <span>À vous de choisir.</span></div>
+    <div class="choix">❤ &nbsp; ✖</div>
+    <div class="sousv">Votre verdict vous attend sur votre téléphone — en toute discrétion.<br>Les coups de cœur mutuels seront révélés en fin de soirée.</div>
+  </div>
+
+  <div class="final" id="vueFinal">
+    <div class="gros">La Révélation · <span>les coups de cœur mutuels</span></div>
+    <div id="matchs"></div>
+  </div>
+
+  <div class="plein" id="vuePause">
+    <div class="coeurbat">❤</div>
+    <div class="gros" id="txtPause">Entracte</div>
+  </div>
+
+  <div class="etat" id="etat">Connexion…</div>
+  <footer><i>Plus qu'une rencontre, une expérience.</i><br>© NEXT · Cœur Code</footer>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — une seule ligne à changer
+   ============================================================ */
+const API_URL = "https://script.google.com/macros/s/AKfycbyp3Es2aS33MIlOMg-dec0fhjIMwXZSkLVpmdrEcSKNbcW6oGwgkeGHS3U9pVbeeNHt/exec";
+const REFRESH_MS = 10000;
+
+/* ============================================================ */
+const el = id => document.getElementById(id);
+// Code de la soirée : via ?code=XXX dans l'URL, ou demandé une fois puis mémorisé
+let CODE = new URLSearchParams(location.search).get('code') || localStorage.getItem('cc_code') || '';
+if (!CODE) { CODE = (prompt('Code de la soirée ?') || '').trim(); }
+if (CODE) localStorage.setItem('cc_code', CODE);
+function montrer(vue){
+  const vues = {classement:'vueClassement', ronde:'vueRonde', vote:'vueVote', final:'vueFinal', pause:'vuePause', etat:'etat'};
+  for (const k in vues)
+    el(vues[k]).style.display = (k===vue) ? ((k==='vote'||k==='pause') ? 'flex' : 'block') : 'none';
+}
+
+const CIRC = 2 * Math.PI * 45;
+el('arc').style.strokeDasharray = CIRC;
+let cDebut = 0, cDuree = 300, cActif = false;
+setInterval(() => {
+  if (!cActif) return;
+  const restant = Math.max(0, cDuree - (Date.now() - cDebut) / 1000);
+  const mm = Math.floor(restant / 60), ss = Math.floor(restant % 60);
+  el('temps').textContent = restant > 0 ? mm + ':' + String(ss).padStart(2,'0') : "C'est fini !";
+  el('arc').style.strokeDashoffset = CIRC * (1 - restant / cDuree);
+  el('cadran').classList.toggle('urgent', restant <= 30 && restant > 0);
+}, 250);
+
+async function maj(){
+  try{
+    const r = await fetch(API_URL + '?action=ecran&code=' + encodeURIComponent(CODE) + '&_=' + Date.now());
+    const s = await r.json();
+    if (s.erreur) { localStorage.removeItem('cc_code'); throw s.erreur; }
+    el('banniere').style.display = s.message ? 'block' : 'none';
+    el('banniere').textContent = s.message || '';
+
+    if (s.mode === 'pause'){
+      cActif = false;
+      el('pill').textContent = 'Entracte';
+      el('txtPause').textContent = s.message || 'Entracte — le bar vous attend.';
+      montrer('pause');
+
+    } else if (s.mode === 'vote'){
+      cActif = false;
+      el('pill').textContent = 'À vous de choisir';
+      montrer('vote');
+
+    } else if (s.mode === 'final'){
+      cActif = false;
+      el('pill').textContent = 'La Révélation';
+      el('matchs').innerHTML = (s.matchs||[]).map(l => `
+        <div class="match">
+          <div class="personne"><div class="badge f">${l[0]}</div><div class="prenom">${l[1]}</div></div>
+          <div class="lien"><div class="coeurbat">💘</div><div class="pct">${l[4]}%</div></div>
+          <div class="personne droite"><div class="badge h">${l[2]}</div><div class="prenom">${l[3]}</div></div>
+        </div>`).join('') || '<div class="etat" style="display:block">Le suspense continue…</div>';
+      montrer('final');
+
+    } else if (s.mode === 'ronde'){
+      cDebut = Number(s.debut||0); cDuree = Number(s.duree||300); cActif = cDebut > 0;
+      el('pill').textContent = 'Ronde ' + s.ronde + ' · 5 minutes';
+      el('titreRonde').innerHTML = 'Ronde <span>' + s.ronde + '</span> — rejoignez vos tables';
+      el('paires').innerHTML = (s.paires||[]).map(l => `
+        <div class="paire">
+          <div class="table">Table ${l[1]}</div>
+          <div class="personne"><div class="badge f">${l[2]}</div><div class="prenom">${l[3]}</div></div>
+          <div class="lien"><div class="coeurbat">❤</div><div class="pct">${l[4]}%</div></div>
+          <div class="personne droite"><div class="badge h">${l[5]}</div><div class="prenom">${l[6]}</div></div>
+        </div>`).join('') || '<div class="etat" style="display:block">Calcul des paires…</div>';
+      montrer('ronde');
+
+    } else { // accueil / classement
+      cActif = false;
+      el('pill').textContent = 'Les affinités en direct';
+      el('compteur').textContent = s.inscrits ? s.inscrits + ' invités dans l\'expérience' : 'Scannez le QR pour entrer dans l\'expérience';
+      const F = (s.classement||[]).filter(l => String(l[0]) === 'F');
+      const H = (s.classement||[]).filter(l => String(l[0]) === 'H');
+      const ligne = l => `<div class="ligne"><div class="mini">${l[1]}</div><div class="nom">${l[2]}</div><div class="score">${l[3]}%</div></div>`;
+      el('listeF').innerHTML = F.map(ligne).join('') || '<div class="etat" style="display:block">En attente…</div>';
+      el('listeH').innerHTML = H.map(ligne).join('') || '<div class="etat" style="display:block">En attente…</div>';
+      montrer('classement');
+    }
+  }catch(e){
+    montrer('etat');
+    el('etat').textContent = 'Connexion à l\'API impossible — vérifie l\'URL /exec dans ecran.html.';
+  }
+}
+maj();
+setInterval(maj, REFRESH_MS);
+</script>
+</body>
+</html>
