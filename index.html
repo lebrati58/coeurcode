@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#181040">
+<title>Cœur Code NEXT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --noir:#0F0D0A; --charbon:#1B1814; --carte:#221E18;
+    --or:#D4B36A; --or-clair:#EFD9A7; --or-sombre:#A8863E;
+    --ivoire:#F7F2E9; --taupe:#9B917F; --bordeaux:#8E3B47; --rouge:#C24D5A; --vert:#7FA97F;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(700px 420px at 50% -8%, rgba(212,179,106,.10), transparent 65%),
+      linear-gradient(180deg, #14110D 0%, var(--noir) 40%);
+    color:var(--ivoire); font-family:'Jost',sans-serif; font-weight:400;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:26px 22px 40px;min-height:100vh;display:flex;flex-direction:column}
+  .logo{text-align:center;line-height:1}
+  .logo small{display:block;font-size:11px;font-weight:500;letter-spacing:.34em;color:var(--or);text-transform:uppercase;margin-bottom:8px}
+  .logo .n{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:44px;letter-spacing:.08em;color:var(--ivoire)}
+  .logo .n i{font-style:italic;color:var(--or)}
+  .logo .tag{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--taupe);margin-top:6px}
+  .filet{width:64px;height:1px;background:linear-gradient(90deg,transparent,var(--or),transparent);margin:16px auto 0}
+  .banniere{display:none;margin:14px 0 0;padding:11px 16px;border-radius:2px;background:rgba(212,179,106,.08);
+    border:1px solid rgba(212,179,106,.35);color:var(--or-clair);font-weight:500;text-align:center;font-size:14px;letter-spacing:.04em}
+
+  .ecran{display:none;flex:1;flex-direction:column;justify-content:center;padding:20px 0}
+  .ecran.actif{display:flex}
+  .titre{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;text-align:center;margin-bottom:6px}
+  .titre span{font-style:italic;color:var(--or)}
+  .sous{color:var(--taupe);font-weight:400;text-align:center;font-size:14px;letter-spacing:.03em;margin-bottom:20px}
+
+  .champ{margin-bottom:16px}
+  .champ label{display:block;font-weight:500;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or-clair);margin-bottom:8px}
+  .champ label small{text-transform:none;letter-spacing:0;color:var(--taupe)}
+  .champ input{width:100%;padding:13px 15px;border-radius:2px;border:1px solid rgba(212,179,106,.28);
+    background:rgba(255,255,255,.03);color:var(--ivoire);font-family:'Jost';font-weight:400;font-size:16px;outline:none;transition:border-color .2s}
+  .champ input:focus{border-color:var(--or)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:9px 16px;border-radius:2px;border:1px solid rgba(212,179,106,.28);
+    background:transparent;color:var(--ivoire);font-family:'Jost';font-weight:400;font-size:14px;letter-spacing:.02em;cursor:pointer;transition:all .2s}
+  .chip.on{background:var(--or);border-color:var(--or);color:var(--noir);font-weight:500}
+  .bouton{width:100%;padding:16px;border:none;border-radius:2px;margin-top:10px;cursor:pointer;
+    font-family:'Jost',sans-serif;font-weight:500;font-size:15px;letter-spacing:.22em;text-transform:uppercase;color:var(--noir);
+    background:linear-gradient(180deg,var(--or-clair),var(--or));transition:opacity .2s}
+  .bouton:disabled{opacity:.4}
+  .erreur{display:none;color:var(--rouge);font-weight:500;text-align:center;margin-top:12px;font-size:14px}
+
+  .grosnum{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:120px;line-height:1;text-align:center;
+    color:var(--or);text-shadow:0 0 60px rgba(212,179,106,.35)}
+  .carte{background:var(--carte);border:1px solid rgba(212,179,106,.22);border-radius:2px;padding:24px;text-align:center;margin-top:16px;line-height:1.6}
+  .carte b{font-weight:500;letter-spacing:.02em}
+
+  .minichrono{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:64px;text-align:center;font-variant-numeric:tabular-nums;color:var(--ivoire)}
+  .minichrono.urgent{color:var(--rouge)}
+  .table{font-weight:500;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--or);text-align:center;margin:6px 0 10px}
+  .datenom{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;text-align:center}
+  .datenom span{font-style:italic;color:var(--or)}
+  .pct{font-weight:500;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);text-align:center;margin-top:8px}
+  .coeurbat{font-size:30px;text-align:center;color:var(--or);animation:bat 1.15s ease-in-out infinite}
+  @keyframes bat{0%,100%{transform:scale(1)}12%{transform:scale(1.18)}24%{transform:scale(1)}36%{transform:scale(1.12)}}
+
+  .votebtns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+  .votebtn{padding:28px 0;border-radius:2px;font-size:46px;cursor:pointer;transition:transform .15s}
+  .votebtn:active{transform:scale(.97)}
+  .votebtn.oui{background:linear-gradient(180deg,var(--or-clair),var(--or));border:none;color:var(--noir)}
+  .votebtn.non{background:transparent;border:1px solid rgba(212,179,106,.35);color:var(--taupe)}
+  .confirme{display:none;text-align:center;margin-top:20px;font-weight:500;font-size:15px;letter-spacing:.04em;color:var(--vert)}
+
+  .match{display:flex;align-items:center;gap:16px;background:var(--carte);
+    border:1px solid rgba(212,179,106,.4);border-radius:2px;padding:16px 20px;margin-top:12px}
+  .match .badge{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:24px;color:var(--or);
+    border:1px solid var(--or);min-width:2.1em;height:2.1em;display:flex;align-items:center;justify-content:center;border-radius:50%}
+  .match .nom{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:24px;flex:1}
+  .match .mp{font-weight:500;color:var(--or);font-size:14px;letter-spacing:.1em}
+
+  footer{text-align:center;color:#5E574B;font-size:12px;margin-top:28px;letter-spacing:.05em}
+  footer i{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--taupe)}
+  @media (prefers-reduced-motion: reduce){ .coeurbat{animation:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><small>Cœur Code · Soirée Tou B'Av</small><span class="n">NE<i>X</i>T</span><span class="tag">Plus qu'une rencontre, une expérience.</span><div class="filet"></div></div>
+  <div class="banniere" id="banniere"></div>
+
+  <!-- INSCRIPTION -->
+  <div class="ecran" id="e-inscription">
+    <div class="titre">Bienvenue à la <span>soirée.</span></div>
+    <div class="sous">Deux minutes, dix questions — l'expérience s'occupe du reste.</div>
+    <div class="champ"><label>🔑 Code de la soirée <small style="color:var(--violet-clair)">(affiché à l'entrée)</small></label><input id="code" maxlength="15" autocapitalize="characters"></div>
+    <div class="champ"><label>Prénom</label><input id="prenom" autocomplete="given-name" maxlength="25"></div>
+    <div class="champ"><label>Nom</label><input id="nom" autocomplete="family-name" maxlength="25"></div>
+    <div class="champ"><label>Âge</label><input id="age" type="number" inputmode="numeric" min="18" max="99"></div>
+    <div class="champ"><label>Tu es…</label><div class="chips" data-q="genre">
+      <button class="chip">Une femme</button><button class="chip">Un homme</button></div></div>
+    <div class="champ"><label>Adresse e-mail</label><input id="email" type="email" autocomplete="email" maxlength="60"></div>
+    <div class="champ"><label>Téléphone</label><input id="tel" type="tel" autocomplete="tel" inputmode="tel" maxlength="20"></div>
+    <div id="questions"></div>
+    <button class="bouton" id="valider">Entrer dans l'expérience</button>
+    <div class="erreur" id="err-inscription"></div>
+  </div>
+
+  <!-- ACCUEIL (numéro) -->
+  <div class="ecran" id="e-accueil">
+    <div class="titre">Ton numéro</div>
+    <div class="grosnum" id="monnum">—</div>
+    <div class="carte">
+      <div class="coeurbat">❤</div>
+      <b id="accueil-texte">Garde cet écran ouvert.<br>La première ronde arrive — regarde l'écran géant !</b>
+    </div>
+  </div>
+
+  <!-- RONDE -->
+  <div class="ecran" id="e-ronde">
+    <div class="titre">Ronde <span id="num-ronde"></span></div>
+    <div class="minichrono" id="chrono">5:00</div>
+    <div class="carte">
+      <div class="table" id="ma-table"></div>
+      <div class="datenom" id="mon-date"></div>
+      <div class="pct" id="mon-pct"></div>
+    </div>
+    <div class="carte" id="pas-de-date" style="display:none">
+      <div class="coeurbat">❦</div>
+      <b>Pas de date cette ronde — profite du bar,<br>tu reviens à la prochaine !</b>
+    </div>
+  </div>
+
+  <!-- VOTE -->
+  <div class="ecran" id="e-vote">
+    <div class="titre">Fin du date. <span>Ton verdict ?</span></div>
+    <div class="sous" id="vote-sous">Ton vote est 100% secret.</div>
+    <div class="votebtns" id="votebtns">
+      <button class="votebtn oui" id="v-oui">❤</button>
+      <button class="votebtn non" id="v-non">✖</button>
+    </div>
+    <div class="confirme" id="confirme">✔ Votre choix est enregistré, en toute discrétion.</div>
+  </div>
+
+  <!-- PAUSE -->
+  <div class="ecran" id="e-pause">
+    <div class="coeurbat" style="font-size:70px">❤</div>
+    <div class="titre" id="txt-pause">Entracte</div>
+  </div>
+
+  <!-- RÉVÉLATION -->
+  <div class="ecran" id="e-final">
+    <div class="titre"><span>Tes coups de cœur mutuels</span></div>
+    <div id="mes-matchs"></div>
+    <div class="carte" id="pas-de-match" style="display:none">
+      <b>Pas de cœur mutuel cette fois…<br>mais la soirée continue — la soirée ne fait que commencer.</b>
+    </div>
+  </div>
+
+  <footer><i>Plus qu'une rencontre, une expérience.</i><br>© NEXT · Cœur Code</footer>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — une seule ligne à changer
+   ============================================================ */
+const API_URL = "https://script.google.com/macros/s/AKfycbyp3Es2aS33MIlOMg-dec0fhjIMwXZSkLVpmdrEcSKNbcW6oGwgkeGHS3U9pVbeeNHt/exec";
+const POLL_MS = 8000;
+
+/* ============================================================ */
+const QUESTIONS = [
+  ["Manges-tu casher ?", ["Oui","Non","Partiellement"]],
+  ["Fais-tu Shabbat ?", ["Oui","Souvent","Parfois","Non"]],
+  ["Veux-tu des enfants ?", ["Oui","Plus tard","Non","Déjà parent"]],
+  ["Aimes-tu voyager ?", ["Oui, beaucoup","Un peu","Pas vraiment"]],
+  ["Fais-tu du sport régulièrement ?", ["Oui","De temps en temps","Non"]],
+  ["As-tu du temps libre ?", ["Oui, j'en ai","Moyennement","Très occupé(e)"]],
+  ["Bois-tu de l'alcool ?", ["Oui","Occasionnellement","Non"]],
+  ["Fumes-tu ?", ["Oui","Non"]],
+  ["Le plus important dans une relation ?", ["Communication","Respect","Complicité","Valeurs"]],
+  ["Ta priorité de vie aujourd'hui ?", ["Carrière","Famille","Équilibre","Aventure","Autre"]]
+];
+
+const $ = id => document.getElementById(id);
+const moi = { num: localStorage.getItem('cc_num'), prenom: localStorage.getItem('cc_prenom'), token: localStorage.getItem('cc_token') };
+
+/* ---------- Construction du questionnaire ---------- */
+$('questions').innerHTML = QUESTIONS.map((q, i) => `
+  <div class="champ"><label>${i+1}. ${q[0]}</label>
+    <div class="chips" data-q="q${i}">${q[1].map(o => `<button class="chip">${o}</button>`).join('')}</div>
+  </div>`).join('');
+
+document.querySelectorAll('.chips').forEach(g => g.addEventListener('click', e => {
+  if (!e.target.classList.contains('chip')) return;
+  e.preventDefault();
+  g.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  e.target.classList.add('on');
+}));
+
+$('valider').addEventListener('click', async () => {
+  const code = $('code').value.trim();
+  const prenom = $('prenom').value.trim();
+  const nom = $('nom').value.trim();
+  const age = parseInt($('age').value, 10);
+  const email = $('email').value.trim();
+  const tel = $('tel').value.trim();
+  const choix = q => { const c = document.querySelector(`[data-q="${q}"] .on`); return c ? c.textContent : null; };
+  const genre = choix('genre');
+  const reponses = QUESTIONS.map((_, i) => choix('q' + i));
+  const err = $('err-inscription');
+  let manque = null;
+  if (!code) manque = 'le code de la soirée';
+  else if (!prenom) manque = 'ton prénom';
+  else if (!nom) manque = 'ton nom';
+  else if (!age || age < 18 || age > 99) manque = 'ton âge (18 ans minimum)';
+  else if (!genre) manque = 'ton genre';
+  else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) manque = 'une adresse e-mail valide';
+  else if (tel.replace(/\D/g, '').length < 8) manque = 'un numéro de téléphone valide';
+  else if (reponses.some(r => !r)) manque = 'des réponses au questionnaire';
+  if (manque) {
+    err.style.display = 'block';
+    err.textContent = 'Il manque ' + manque + ' !';
+    return;
+  }
+  err.style.display = 'none';
+  $('valider').disabled = true;
+  $('valider').textContent = 'Inscription…';
+  try {
+    const r = await appel('POST', { action: 'inscription', code, prenom, nom, age, email, tel,
+      genre: genre.toLowerCase().includes('femme') ? 'F' : 'H', reponses });
+    if (r.erreur) throw r.erreur;
+    moi.num = String(r.num); moi.prenom = r.prenom; moi.token = r.token;
+    localStorage.setItem('cc_num', moi.num);
+    localStorage.setItem('cc_prenom', moi.prenom);
+    localStorage.setItem('cc_token', moi.token);
+    boucle();
+  } catch (e) {
+    err.style.display = 'block';
+    err.textContent = 'Oups, réessaie ! (' + e + ')';
+    $('valider').disabled = false;
+    $('valider').textContent = 'Entrer dans l\'expérience';
+  }
+});
+
+/* ---------- API ---------- */
+async function appel(methode, corps) {
+  const opts = methode === 'POST'
+    ? { method: 'POST', body: JSON.stringify(corps) }   // text/plain → pas de préflight CORS
+    : {};
+  const url = methode === 'POST' ? API_URL
+    : API_URL + '?action=etat&token=' + encodeURIComponent(moi.token) + '&_=' + Date.now();
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+/* ---------- Navigation ---------- */
+function montrer(id) {
+  document.querySelectorAll('.ecran').forEach(e => e.classList.remove('actif'));
+  $(id).classList.add('actif');
+}
+
+/* ---------- Chrono ---------- */
+let cDebut = 0, cDuree = 300;
+setInterval(() => {
+  if (!$('e-ronde').classList.contains('actif') || !cDebut) return;
+  const restant = Math.max(0, cDuree - (Date.now() - cDebut) / 1000);
+  const mm = Math.floor(restant / 60), ss = Math.floor(restant % 60);
+  $('chrono').textContent = restant > 0 ? mm + ':' + String(ss).padStart(2, '0') : "C'est fini !";
+  $('chrono').classList.toggle('urgent', restant <= 30);
+}, 250);
+
+/* ---------- Vote ---------- */
+let voteEnvoye = null; // ronde du dernier vote
+async function vote(coeur) {
+  $('votebtns').style.display = 'none';
+  try {
+    const r = await appel('POST', { action: 'vote', token: moi.token, coeur });
+    if (r.erreur) throw r.erreur;
+    voteEnvoye = derniereRonde;
+    $('confirme').style.display = 'block';
+  } catch (e) {
+    $('votebtns').style.display = 'grid';
+    alert('Le vote n\'est pas passé, réessaie ! (' + e + ')');
+  }
+}
+$('v-oui').addEventListener('click', () => vote(true));
+$('v-non').addEventListener('click', () => vote(false));
+
+/* ---------- Boucle principale ---------- */
+let derniereRonde = 0;
+async function boucle() {
+  if (!moi.num || !moi.token) { montrer('e-inscription'); return; }
+  try {
+    const s = await appel('GET');
+    derniereRonde = s.ronde || 0;
+    $('banniere').style.display = s.message ? 'block' : 'none';
+    $('banniere').textContent = s.message || '';
+    $('monnum').textContent = moi.num;
+
+    if (s.mode === 'ronde') {
+      cDebut = s.debut; cDuree = s.duree;
+      $('num-ronde').textContent = s.ronde;
+      if (s.date) {
+        $('pas-de-date').style.display = 'none';
+        $('ma-table').textContent = '📍 Table ' + s.date.table;
+        $('mon-date').innerHTML = 'Tu dates <span>' + s.date.prenom + '</span> · N°' + s.date.num;
+        $('mon-pct').textContent = '❤ ' + s.date.pct + '% de compatibilité';
+      } else {
+        $('pas-de-date').style.display = 'block';
+        $('ma-table').textContent = ''; $('mon-date').textContent = ''; $('mon-pct').textContent = '';
+      }
+      montrer('e-ronde');
+    } else if (s.mode === 'vote') {
+      if (s.date && voteEnvoye !== derniereRonde) {
+        $('vote-sous').textContent = 'Ton date avec ' + (s.date.prenom || '…') + ' — 100% secret.';
+        $('votebtns').style.display = 'grid';
+        $('confirme').style.display = 'none';
+        montrer('e-vote');
+      } else {
+        $('accueil-texte').innerHTML = voteEnvoye === derniereRonde
+          ? '✔ Vote enregistré.<br>Prochaine ronde imminente…'
+          : 'Prochaine ronde imminente…';
+        montrer('e-accueil');
+      }
+    } else if (s.mode === 'pause') {
+      $('txt-pause').textContent = s.message || 'Entracte — le bar vous attend.';
+      montrer('e-pause');
+    } else if (s.mode === 'final') {
+      const m = s.matchs || [];
+      $('mes-matchs').innerHTML = m.map(x => `
+        <div class="match"><div class="badge">${x.num}</div><div class="nom">${x.prenom}</div><div class="mp">💘 ${x.pct}%</div></div>`).join('');
+      $('pas-de-match').style.display = m.length ? 'none' : 'block';
+      montrer('e-final');
+    } else {
+      $('accueil-texte').innerHTML = 'Garde cet écran ouvert.<br>La première ronde arrive — regarde l\'écran géant !';
+      montrer('e-accueil');
+    }
+  } catch (e) { /* réseau : on retentera au prochain tour */ }
+}
+boucle();
+setInterval(boucle, POLL_MS);
+</script>
+</body>
+</html>
