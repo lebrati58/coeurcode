@@ -1,0 +1,36 @@
+❤ CŒUR CODE NEXT — Déploiement via OpenClaw (@caeliobot)
+
+═══ AVANT (toi, dans le navigateur — OpenClaw ne peut pas le faire) ═══
+1. sheets.new → Extensions → Apps Script → tout effacer → coller Code.gs → Enregistrer
+2. Déployer → Nouveau déploiement → Application Web → Moi / Tout le monde → copier l'URL /exec
+3. Recharger le Sheet → menu 💘 → 🔑 Définir le code de la soirée
+
+═══ MESSAGE 1 à @caeliobot (vérification, à envoyer tel quel) ═══
+Exécute ces 2 commandes et renvoie-moi uniquement leur sortie, sans analyse :
+gh auth status 2>&1 | head -3
+git config --global user.name || echo "GIT NON CONFIGURÉ"
+
+→ Si "GIT NON CONFIGURÉ" ou pas connecté à GitHub, envoie d'abord :
+Exécute : git config --global user.name "Lionel" && git config --global user.email "TON@EMAIL" && gh auth login --web
+(et suis le lien d'authentification qu'il te donne)
+
+═══ MESSAGE 2 à @caeliobot (déploiement) ═══
+D'abord : envoie le fichier coeurcode_pack.zip en pièce jointe dans Telegram à @caeliobot.
+Puis envoie ce message (remplace URL_EXEC et USER_GITHUB) :
+
+Tu viens de recevoir un fichier zip en pièce jointe. Sans analyser ni modifier
+aucun fichier : copie-le sous /home/lebra/coeurcode_pack.zip, puis exécute :
+mkdir -p /home/lebra/coeurcode && cd /home/lebra/coeurcode && unzip -o /home/lebra/coeurcode_pack.zip && chmod +x deploy.sh && ./deploy.sh "URL_EXEC" "USER_GITHUB"
+Renvoie-moi la sortie complète du script, puis envoie-moi le fichier
+/home/lebra/coeurcode/qr_coeur.png en pièce jointe.
+
+(Si le bot ne sait pas récupérer la pièce jointe : depuis ton PC,
+scp coeurcode_pack.zip lebra@IP_INSTANCE:/home/lebra/ puis renvoie le même
+message en supprimant la première phrase.)
+
+═══ APRÈS ═══
+- 📱 App : https://USER_GITHUB.github.io/coeurcode/
+- 📺 Écran : https://USER_GITHUB.github.io/coeurcode/ecran.html?code=TONCODE
+- ❤ QR : reçu par Telegram, prêt à imprimer
+Test : inscris-toi sur l'app (1 femme + 1 homme minimum), puis Sheet →
+menu 💘 → ▶ Lancer la ronde suivante.

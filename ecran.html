@@ -49,7 +49,8 @@
   .cadran.urgent .coeurbat{animation-duration:.5s}
   @keyframes bat{0%,100%{transform:scale(1)}12%{transform:scale(1.18)}24%{transform:scale(1)}36%{transform:scale(1.12)}}
 
-  .paires{display:flex;flex-direction:column;gap:10px}
+  .paires{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:1000px){ .paires.deuxcol{grid-template-columns:1fr 1fr} }
   .paire{display:grid;grid-template-columns:auto 1fr auto 1fr;align-items:center;gap:10px;
     background:var(--carte);border:1px solid rgba(212,179,106,.2);border-radius:2px;padding:13px 22px;animation:pop .5s ease both}
   @keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -172,7 +173,7 @@ function montrer(vue){
 
 const CIRC = 2 * Math.PI * 45;
 el('arc').style.strokeDasharray = CIRC;
-let cDebut = 0, cDuree = 300, cActif = false;
+let cDebut = 0, cDuree = 300, cActif = false, echecs = 0;
 setInterval(() => {
   if (!cActif) return;
   const restant = Math.max(0, cDuree - (Date.now() - cDebut) / 1000);
@@ -186,7 +187,12 @@ async function maj(){
   try{
     const r = await fetch(API_URL + '?action=ecran&code=' + encodeURIComponent(CODE) + '&_=' + Date.now());
     const s = await r.json();
-    if (s.erreur) { localStorage.removeItem('cc_code'); throw s.erreur; }
+    if (s.erreur) {
+      // on n'oublie le code mémorisé que s'il est vraiment refusé (pas sur une coupure réseau)
+      if (String(s.erreur).indexOf('code') !== -1) localStorage.removeItem('cc_code');
+      throw s.erreur;
+    }
+    echecs = 0;
     el('banniere').style.display = s.message ? 'block' : 'none';
     el('banniere').textContent = s.message || '';
 
@@ -216,6 +222,7 @@ async function maj(){
       cDebut = Number(s.debut||0); cDuree = Number(s.duree||300); cActif = cDebut > 0;
       el('pill').textContent = 'Ronde ' + s.ronde + ' · 5 minutes';
       el('titreRonde').innerHTML = 'Ronde <span>' + s.ronde + '</span> — rejoignez vos tables';
+      el('paires').classList.toggle('deuxcol', (s.paires||[]).length > 14); // 100+ invités → 2 colonnes
       el('paires').innerHTML = (s.paires||[]).map(l => `
         <div class="paire">
           <div class="table">Table ${l[1]}</div>
@@ -229,16 +236,19 @@ async function maj(){
       cActif = false;
       el('pill').textContent = 'Les affinités en direct';
       el('compteur').textContent = s.inscrits ? s.inscrits + ' invités dans l\'expérience' : 'Scannez le QR pour entrer dans l\'expérience';
-      const F = (s.classement||[]).filter(l => String(l[0]) === 'F');
-      const H = (s.classement||[]).filter(l => String(l[0]) === 'H');
+      const F = (s.classement||[]).filter(l => String(l[0]) === 'F').slice(0, 12);
+      const H = (s.classement||[]).filter(l => String(l[0]) === 'H').slice(0, 12);
       const ligne = l => `<div class="ligne"><div class="mini">${l[1]}</div><div class="nom">${l[2]}</div><div class="score">${l[3]}%</div></div>`;
       el('listeF').innerHTML = F.map(ligne).join('') || '<div class="etat" style="display:block">En attente…</div>';
       el('listeH').innerHTML = H.map(ligne).join('') || '<div class="etat" style="display:block">En attente…</div>';
       montrer('classement');
     }
   }catch(e){
-    montrer('etat');
-    el('etat').textContent = 'Connexion à l\'API impossible — vérifie l\'URL /exec dans ecran.html.';
+    echecs++;
+    if (echecs >= 3) { // on ne casse pas l'écran géant pour une micro-coupure
+      montrer('etat');
+      el('etat').textContent = 'Connexion perdue — nouvelle tentative automatique…';
+    }
   }
 }
 maj();

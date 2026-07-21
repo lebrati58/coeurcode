@@ -247,13 +247,17 @@ $('valider').addEventListener('click', async () => {
 
 /* ---------- API ---------- */
 async function appel(methode, corps) {
-  const opts = methode === 'POST'
-    ? { method: 'POST', body: JSON.stringify(corps) }   // text/plain → pas de préflight CORS
-    : {};
-  const url = methode === 'POST' ? API_URL
-    : API_URL + '?action=etat&token=' + encodeURIComponent(moi.token) + '&_=' + Date.now();
-  const r = await fetch(url, opts);
-  return r.json();
+  const ctl = new AbortController();
+  const minuteur = setTimeout(() => ctl.abort(), 20000); // requête coincée = coupée
+  try {
+    const opts = methode === 'POST'
+      ? { method: 'POST', body: JSON.stringify(corps), signal: ctl.signal }   // text/plain → pas de préflight CORS
+      : { signal: ctl.signal };
+    const url = methode === 'POST' ? API_URL
+      : API_URL + '?action=etat&token=' + encodeURIComponent(moi.token) + '&_=' + Date.now();
+    const r = await fetch(url, opts);
+    return await r.json();
+  } finally { clearTimeout(minuteur); }
 }
 
 /* ---------- Navigation ---------- */
@@ -292,7 +296,7 @@ $('v-non').addEventListener('click', () => vote(false));
 /* ---------- Boucle principale ---------- */
 let derniereRonde = 0;
 async function boucle() {
-  if (!moi.num || !moi.token) { montrer('e-inscription'); return; }
+  if (!moi.num || !moi.token) { montrer('e-inscription'); return true; }
   try {
     const s = await appel('GET');
     derniereRonde = s.ronde || 0;
@@ -338,10 +342,19 @@ async function boucle() {
       $('accueil-texte').innerHTML = 'Garde cet écran ouvert.<br>La première ronde arrive — regarde l\'écran géant !';
       montrer('e-accueil');
     }
-  } catch (e) { /* réseau : on retentera au prochain tour */ }
+    return true;
+  } catch (e) { return false; /* réseau : on retentera au prochain tour */ }
 }
-boucle();
-setInterval(boucle, POLL_MS);
+
+/* Cadence étalée (jitter) + recul automatique en cas d'erreur :
+   indispensable pour que 100+ téléphones ne frappent pas l'API en même temps. */
+let attente = POLL_MS;
+async function tick() {
+  const ok = await boucle();
+  attente = ok ? POLL_MS : Math.min(Math.round(attente * 1.6), 40000);
+  setTimeout(tick, attente + Math.random() * 4000);
+}
+tick();
 </script>
 </body>
 </html>
