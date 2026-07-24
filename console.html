@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F0D0A">
+<meta name="robots" content="noindex,nofollow">
+<title>Console · Cœur Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --noir:#0F0D0A; --carte:#221E18;
+    --or:#D4B36A; --or-clair:#EFD9A7;
+    --ivoire:#F7F2E9; --taupe:#9B917F; --rouge:#C24D5A; --vert:#7FA97F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(700px 420px at 50% -8%, rgba(212,179,106,.10), transparent 65%),
+      linear-gradient(180deg, #14110D 0%, var(--noir) 40%);
+    color:var(--ivoire); font-family:'Jost',sans-serif;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:22px 18px 40px;min-height:100vh;display:flex;flex-direction:column}
+  .logo{text-align:center;line-height:1;margin-bottom:14px}
+  .logo small{display:block;font-size:11px;font-weight:500;letter-spacing:.34em;color:var(--or);text-transform:uppercase;margin-bottom:6px}
+  .logo .n{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;color:var(--ivoire)}
+  .logo .n i{font-style:italic;color:var(--or)}
+  .filet{width:64px;height:1px;background:linear-gradient(90deg,transparent,var(--or),transparent);margin:12px auto 0}
+
+  .ecran{display:none;flex:1;flex-direction:column}
+  .ecran.actif{display:flex}
+  .titre{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;text-align:center;margin:10px 0 4px}
+  .titre span{font-style:italic;color:var(--or)}
+  .sous{color:var(--taupe);text-align:center;font-size:14px;margin-bottom:18px}
+
+  input.pin{width:100%;padding:15px;border-radius:2px;border:1px solid rgba(212,179,106,.28);
+    background:rgba(255,255,255,.03);color:var(--ivoire);font-family:'Jost';font-size:22px;text-align:center;
+    letter-spacing:.4em;outline:none}
+  input.pin:focus{border-color:var(--or)}
+
+  .etat{background:var(--carte);border:1px solid rgba(212,179,106,.22);border-radius:2px;padding:16px;margin-bottom:14px}
+  .mode{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:26px;text-align:center}
+  .mode span{font-style:italic;color:var(--or)}
+  .chrono{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:44px;text-align:center;
+    font-variant-numeric:tabular-nums;line-height:1.1;display:none}
+  .chrono.urgent{color:var(--rouge)}
+  .stats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .pill{border:1px solid rgba(212,179,106,.3);border-radius:2px;padding:5px 10px;font-size:12.5px;color:var(--or-clair);letter-spacing:.03em}
+  .pill b{color:var(--ivoire);font-weight:600}
+
+  .info{display:none;margin:0 0 12px;padding:10px 14px;border-radius:2px;text-align:center;font-size:14px;
+    background:rgba(127,169,127,.1);border:1px solid rgba(127,169,127,.45);color:var(--vert)}
+  .info.err{background:rgba(194,77,90,.08);border-color:rgba(194,77,90,.5);color:var(--rouge)}
+
+  .btn{width:100%;padding:17px 14px;border:none;border-radius:2px;margin-bottom:10px;cursor:pointer;
+    font-family:'Jost';font-weight:500;font-size:15px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--noir);background:linear-gradient(180deg,var(--or-clair),var(--or));transition:opacity .2s,transform .1s}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.35}
+  .btn.ligne{background:transparent;border:1px solid rgba(212,179,106,.4);color:var(--or-clair)}
+  .btn.danger{background:transparent;border:1px solid rgba(194,77,90,.55);color:var(--rouge)}
+  .btn.arme{background:linear-gradient(180deg,#E8909B,var(--rouge));border:none;color:var(--noir)}
+  .deux{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .deux .btn{margin-bottom:10px}
+  .section{font-size:11px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--taupe);
+    text-align:center;margin:14px 0 10px}
+
+  footer{text-align:center;color:#5E574B;font-size:12px;margin-top:24px}
+  footer button{background:none;border:none;color:#5E574B;font-family:'Jost';font-size:12px;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><small>Console d'animation</small><span class="n">CŒUR <i>CODE</i></span><div class="filet"></div></div>
+
+  <!-- PIN -->
+  <div class="ecran actif" id="e-pin">
+    <div class="titre">Console <span>verrouillée</span></div>
+    <div class="sous">Entre le PIN d'animatrice<br>(défini dans le Sheet : menu 💘 → 📱 PIN de la console)</div>
+    <input class="pin" id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="20">
+    <button class="btn" id="ouvrir" style="margin-top:14px">Ouvrir la console</button>
+    <div class="info err" id="pin-err" style="margin-top:12px"></div>
+  </div>
+
+  <!-- CONSOLE -->
+  <div class="ecran" id="e-console">
+    <div class="etat">
+      <div class="mode" id="mode">…</div>
+      <div class="chrono" id="chrono">5:00</div>
+      <div class="stats">
+        <div class="pill">👥 <b id="s-inscrits">0</b> inscrits (<b id="s-f">0</b>F/<b id="s-h">0</b>H)</div>
+        <div class="pill">📍 <b id="s-tables">0</b> tables</div>
+        <div class="pill">🗳 <b id="s-votes">0</b> votes</div>
+        <div class="pill">💘 <b id="s-matchs">0</b> matchs</div>
+      </div>
+      <div class="stats"><div class="pill">🔑 code soirée : <b id="s-code">—</b></div></div>
+    </div>
+
+    <div class="info" id="info"></div>
+
+    <button class="btn" data-cmd="ronde">▶ Lancer la ronde suivante</button>
+    <button class="btn" data-cmd="vote">⏳ Ouvrir les votes</button>
+    <div class="deux">
+      <button class="btn ligne" data-cmd="classement">✨ Classement</button>
+      <button class="btn ligne" data-cmd="pause">🍸 Pause</button>
+    </div>
+    <button class="btn ligne" data-cmd="chrono">↺ Relancer le chrono (5:00)</button>
+    <button class="btn danger" id="b-final">🎆 Révélation finale</button>
+
+    <div class="section">Outils</div>
+    <div class="deux">
+      <button class="btn ligne" id="b-message">📣 Message</button>
+      <button class="btn ligne" id="b-code">🔑 Code soirée</button>
+    </div>
+    <button class="btn ligne" data-cmd="export">📧 Exporter les contacts des matchs</button>
+    <button class="btn danger" id="b-reset">⚠ Réinitialiser toute la soirée</button>
+
+    <footer>Actualisation auto toutes les 10 s · <button id="deconnexion">changer de PIN</button></footer>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — même URL /exec que index.html et ecran.html
+   ============================================================ */
+const API_URL = "https://script.google.com/macros/s/AKfycbyp3Es2aS33MIlOMg-dec0fhjIMwXZSkLVpmdrEcSKNbcW6oGwgkeGHS3U9pVbeeNHt/exec";
+const POLL_MS = 10000;
+
+const $ = id => document.getElementById(id);
+let pin = localStorage.getItem('cc_admin_pin') || '';
+let occupe = false;
+
+async function api(cmd, extra) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 25000);
+  try {
+    const r = await fetch(API_URL, {
+      method: 'POST', signal: ctl.signal, // text/plain → pas de préflight CORS
+      body: JSON.stringify(Object.assign({ action: 'admin', pin: pin, cmd: cmd }, extra || {}))
+    });
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+
+/* ---------- Connexion ---------- */
+function montrer(id) {
+  document.querySelectorAll('.ecran').forEach(e => e.classList.remove('actif'));
+  $(id).classList.add('actif');
+}
+
+$('ouvrir').addEventListener('click', async () => {
+  pin = $('pin').value.trim();
+  if (!pin) return;
+  $('ouvrir').disabled = true; $('ouvrir').textContent = 'Vérification…';
+  try {
+    const r = await api('etat');
+    if (r.erreur) throw r.erreur;
+    localStorage.setItem('cc_admin_pin', pin);
+    rendre(r);
+    montrer('e-console');
+  } catch (e) {
+    $('pin-err').style.display = 'block';
+    $('pin-err').textContent = String(e).includes('PIN') ? String(e) : 'Connexion impossible (' + e + ')';
+  }
+  $('ouvrir').disabled = false; $('ouvrir').textContent = 'Ouvrir la console';
+});
+
+$('deconnexion').addEventListener('click', () => {
+  localStorage.removeItem('cc_admin_pin'); pin = '';
+  $('pin').value = ''; $('pin-err').style.display = 'none';
+  montrer('e-pin');
+});
+
+/* ---------- Rendu ---------- */
+const MODES = {
+  accueil: 'Accueil — <span>inscriptions ouvertes</span>',
+  ronde: 'Ronde <span>%R en cours</span>',
+  vote: 'Votes <span>ouverts</span>',
+  classement: 'Classement <span>affiché</span>',
+  pause: '<span>Entracte</span>',
+  final: 'Révélation <span>finale</span> 🎆'
+};
+let cDebut = 0, cDuree = 0;
+
+function rendre(s) {
+  if (!s || s.erreur) return;
+  $('mode').innerHTML = (MODES[s.mode] || s.mode).replace('%R', s.ronde);
+  $('s-inscrits').textContent = s.inscrits; $('s-f').textContent = s.femmes; $('s-h').textContent = s.hommes;
+  $('s-tables').textContent = s.tables; $('s-votes').textContent = s.votants;
+  $('s-matchs').textContent = s.matchs;
+  $('s-code').textContent = s.code || 'non défini';
+  cDebut = s.mode === 'ronde' ? s.debut : 0; cDuree = s.duree || 300;
+  $('chrono').style.display = s.mode === 'ronde' ? 'block' : 'none';
+  if (s.info) toast(s.info, false);
+}
+
+setInterval(() => {
+  if (!cDebut) return;
+  const restant = Math.max(0, cDuree - (Date.now() - cDebut) / 1000);
+  const mm = Math.floor(restant / 60), ss = Math.floor(restant % 60);
+  $('chrono').textContent = restant > 0 ? mm + ':' + String(ss).padStart(2, '0') : "C'est fini !";
+  $('chrono').classList.toggle('urgent', restant <= 30);
+}, 250);
+
+let toastT = 0;
+function toast(msg, erreur) {
+  const el = $('info');
+  el.className = erreur ? 'info err' : 'info';
+  el.style.display = 'block';
+  el.textContent = msg;
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { el.style.display = 'none'; }, 6000);
+}
+
+/* ---------- Commandes ---------- */
+async function envoyer(cmd, extra, bouton) {
+  if (occupe) return;
+  occupe = true;
+  const label = bouton ? bouton.textContent : '';
+  if (bouton) { bouton.disabled = true; bouton.textContent = '⏳ …'; }
+  try {
+    const r = await api(cmd, extra);
+    if (r.erreur) throw r.erreur;
+    rendre(r);
+  } catch (e) { toast('Échec : ' + e, true); }
+  if (bouton) { bouton.disabled = false; bouton.textContent = label; }
+  occupe = false;
+}
+
+document.querySelectorAll('[data-cmd]').forEach(b =>
+  b.addEventListener('click', () => envoyer(b.dataset.cmd, {}, b)));
+
+/* Révélation finale : double appui pour éviter la catastrophe */
+let armeFinal = 0;
+$('b-final').addEventListener('click', function () {
+  if (Date.now() - armeFinal < 6000) {
+    this.classList.remove('arme'); this.textContent = '🎆 Révélation finale'; armeFinal = 0;
+    envoyer('final', {}, this);
+  } else {
+    armeFinal = Date.now();
+    this.classList.add('arme'); this.textContent = '🎆 Appuie encore pour RÉVÉLER';
+    setTimeout(() => { if (armeFinal) { this.classList.remove('arme'); this.textContent = '🎆 Révélation finale'; armeFinal = 0; } }, 6000);
+  }
+});
+
+$('b-message').addEventListener('click', function () {
+  const t = prompt('Message à afficher sur tous les téléphones + écran géant\n(vide = effacer le message) :', '');
+  if (t === null) return;
+  envoyer('message', { texte: t.trim() }, this);
+});
+
+$('b-code').addEventListener('click', function () {
+  const t = prompt('Nouveau code de la soirée (affiché à l\'entrée) :', '');
+  if (t === null || !t.trim()) return;
+  envoyer('code', { texte: t.trim() }, this);
+});
+
+$('b-reset').addEventListener('click', function () {
+  const t = prompt('⚠ Tout effacer (participants, votes, rondes, matchs) ?\nTape EFFACER en majuscules pour confirmer :', '');
+  if (t !== 'EFFACER') return;
+  envoyer('reset', { confirme: 'EFFACER' }, this);
+});
+
+/* ---------- Boucle d'actualisation ---------- */
+async function tick() {
+  if ($('e-console').classList.contains('actif') && !occupe) {
+    try { const r = await api('etat'); if (!r.erreur) { r.info = ''; rendre(r); } } catch (e) {}
+  }
+  setTimeout(tick, POLL_MS + Math.random() * 2000);
+}
+tick();
+
+/* Connexion auto si PIN déjà mémorisé */
+if (pin) { $('pin').value = pin; $('ouvrir').click(); }
+</script>
+</body>
+</html>
